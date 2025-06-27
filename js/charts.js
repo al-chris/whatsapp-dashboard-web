@@ -15,6 +15,8 @@ class ChartManager {
         const ctx = canvas.getContext('2d');
         const labels = stats.map(s => s.label);
         const data = stats.map(s => s.value);
+        const fullDates = stats.map(s => s.fullDate || s.label); // Fallback to label if fullDate not available
+        
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
             type: 'line',
@@ -29,7 +31,73 @@ class ChartManager {
                     tension: 0.4 // Add smooth curve tension
                 }] 
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            title: function(context) {
+                                // Show full date in tooltip
+                                const index = context[0].dataIndex;
+                                return fullDates[index];
+                            },
+                            label: function(context) {
+                                return `Messages: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 10, // Limit number of ticks to prevent overcrowding
+                            maxRotation: 45, // Rotate labels for better readability
+                            minRotation: 0,
+                            font: {
+                                size: 11
+                            },
+                            callback: function(value, index, values) {
+                                // Show every nth label based on data density
+                                const totalLabels = labels.length;
+                                const skipFactor = Math.ceil(totalLabels / 10);
+                                return index % skipFactor === 0 ? labels[index] : '';
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Messages'
+                        }
+                    }
+                }
+            }
         });
         return this.charts[canvasId];
     }
@@ -44,11 +112,66 @@ class ChartManager {
         const ctx = canvas.getContext('2d');
         const labels = participants.map(p => p.name);
         const data = participants.map(p => p.count);
+        
+        // WhatsApp-themed color palette
+        const whatsappColors = [
+            '#25d366', // WhatsApp green (primary)
+            '#128c7e', // Dark teal
+            '#34b7f1', // Light blue
+            '#17a2b8', // Info blue
+            '#28a745', // Success green
+            '#007bff', // Primary blue
+            '#6c757d', // Secondary gray
+            '#20c997', // Teal
+            '#fd7e14', // Orange
+            '#e83e8c', // Pink
+            '#6f42c1', // Purple
+            '#dc3545'  // Red
+        ];
+        const colors = participants.map((_, i) => whatsappColors[i % whatsappColors.length]);
+        
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels, datasets: [{ data, backgroundColor: participants.map((_,i) => `hsl(${i*360/participants.length},70%,50%)`) }] },
-            options: { responsive: true, maintainAspectRatio: false }
+            data: { 
+                labels, 
+                datasets: [{ 
+                    data, 
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#25d366' // WhatsApp green on hover
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
         });
         return this.charts[canvasId];
     }
@@ -63,11 +186,73 @@ class ChartManager {
         const ctx = canvas.getContext('2d');
         const labels = types.map(t => t.type);
         const data = types.map(t => t.count);
+        
+        // WhatsApp-themed colors for message types
+        const typeColors = {
+            'text': '#25d366',      // WhatsApp green for text messages
+            'media': '#128c7e',     // Dark teal for media
+            'deleted': '#dc3545'    // Red for deleted messages
+        };
+        const colors = labels.map(label => typeColors[label] || '#6c757d');
+        
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Types', data, backgroundColor: ['#25d366','#128c7e','#dc3545','#ffc107'] }] },
-            options: { responsive: true, maintainAspectRatio: false }
+            data: { 
+                labels: labels.map(label => label.charAt(0).toUpperCase() + label.slice(1)), // Capitalize labels
+                datasets: [{ 
+                    label: 'Message Count', 
+                    data, 
+                    backgroundColor: colors,
+                    borderColor: colors,
+                    borderWidth: 1,
+                    hoverBackgroundColor: colors.map(color => color + 'CC'), // Add transparency on hover
+                    hoverBorderColor: '#25d366',
+                    hoverBorderWidth: 2
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        display: false 
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed.y} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Message Type'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: { 
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
         });
         return this.charts[canvasId];
     }
@@ -182,33 +367,69 @@ class ChartManager {
     createResponseTimeChart(canvasId, stats) {
         const ctx = document.getElementById(canvasId).getContext('2d');
         const labels = stats.map(s => s.participant);
-        const data = stats.map(s => s.average);
+        const averageData = stats.map(s => s.average);
+        const medianData = stats.map(s => s.median);
         
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
             type: 'bar',
             data: { 
                 labels, 
-                datasets: [{ 
-                    label: 'Avg Response Time (min)', 
-                    data, 
-                    backgroundColor: '#fcba03',
-                    borderColor: '#fcba03',
-                    borderWidth: 1
-                }] 
+                datasets: [
+                    { 
+                        label: 'Average Response Time (min)', 
+                        data: averageData, 
+                        backgroundColor: '#5fde8b',
+                        borderColor: '#4fb573',
+                        borderWidth: 1
+                    },
+                    { 
+                        label: 'Median Response Time (min)', 
+                        data: medianData, 
+                        backgroundColor: '#3d9970',
+                        borderColor: '#2e7559',
+                        borderWidth: 1
+                    }
+                ] 
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { 
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y} min`;
+                            }
+                        }
+                    }
                 },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Users'
+                        }
+                    },
                     y: { 
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Minutes'
+                            text: 'Response Time (minutes)'
                         }
                     }
                 }
@@ -227,7 +448,23 @@ class ChartManager {
         const ctx = canvas.getContext('2d');
         const labels = stats.map(s => s.participant);
         const data = stats.map(s => s.count);
-        const colors = stats.map((_, i) => `hsl(${i * 50}, 70%, 60%)`);
+        
+        // WhatsApp-themed color palette
+        const whatsappColors = [
+            '#25d366', // WhatsApp green (primary)
+            '#128c7e', // Dark teal
+            '#34b7f1', // Light blue
+            '#17a2b8', // Info blue
+            '#28a745', // Success green
+            '#007bff', // Primary blue
+            '#6c757d', // Secondary gray
+            '#20c997', // Teal
+            '#fd7e14', // Orange
+            '#e83e8c', // Pink
+            '#6f42c1', // Purple
+            '#dc3545'  // Red
+        ];
+        const colors = stats.map((_, i) => whatsappColors[i % whatsappColors.length]);
         
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
@@ -238,7 +475,9 @@ class ChartManager {
                     data, 
                     backgroundColor: colors,
                     borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderColor: '#ffffff',
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#25d366' // WhatsApp green on hover
                 }] 
             },
             options: { 
@@ -307,34 +546,72 @@ class ChartManager {
         // Clear any existing content
         container.innerHTML = '';
         
-        // Prepare data for D3 word cloud - reduced font sizes to fit more words
-        const words = data.slice(0, 80).map(item => ({
-            text: item.word,
-            size: Math.max(8, Math.min(32, item.count * 1.2)) // Reduced max size from 60 to 32, reduced multiplier
-        }));
+        // Prepare data for D3 word cloud with adaptive font size variation
+        const maxCount = Math.max(...data.map(item => item.count));
+        const minCount = Math.min(...data.map(item => item.count));
         
-        // Set dimensions
-        const margin = {top: 10, right: 10, bottom: 10, left: 10};
-        const width = container.offsetWidth || 800;
-        const height = container.offsetHeight || 400;
+        // Get container dimensions for adaptive sizing
+        const containerRect = container.getBoundingClientRect();
+        const containerWidth = containerRect.width || container.offsetWidth || 400;
+        const containerHeight = containerRect.height || container.offsetHeight || 350;
+        const isWideCard = containerWidth > 600; // Detect if it's a wide card
+        
+        // Adjust word count based on card size
+        const maxWords = isWideCard ? 80 : 60; // More words for regular cards to fill space
+        
+        const words = data.slice(0, maxWords).map(item => {
+            // Create adaptive size scaling based on container width
+            const normalizedSize = (item.count - minCount) / (maxCount - minCount);
+            
+            // Different font size ranges for wide vs regular cards
+            if (isWideCard) {
+                // Wide card: slightly reduced font sizes (10px to 42px) to prevent overflow
+                const fontSize = Math.max(10, Math.min(42, 10 + (normalizedSize * 32)));
+                return { text: item.word, size: fontSize, count: item.count };
+            } else {
+                // Regular card: increased font sizes (14px to 38px) for better space usage
+                const fontSize = Math.max(14, Math.min(38, 14 + (normalizedSize * 24)));
+                return { text: item.word, size: fontSize, count: item.count };
+            }
+        });
+        
+        // Set dimensions to better use available space
+        const width = containerWidth;
+        const height = Math.max(340, containerHeight);
+        
+        // Increase margins to ensure words stay within bounds
+        const margin = {
+            top: isWideCard ? 10 : 10, 
+            right: isWideCard ? 15 : 10, 
+            bottom: isWideCard ? 10 : 10, 
+            left: isWideCard ? 15 : 10
+        };
         const cloudWidth = width - margin.left - margin.right;
         const cloudHeight = height - margin.top - margin.bottom;
         
-        // Create SVG
+        // Create SVG that fills the container with proper bounds
         const svg = d3.select(`#${canvasId}`).append("svg")
-            .attr("width", width)
-            .attr("height", height)
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .style("max-width", "100%")
+            .style("height", "auto")
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
         
-        // Create word cloud layout
+        // Create word cloud layout with adaptive settings and better bounds
         const layout = d3.layout.cloud()
             .size([cloudWidth, cloudHeight])
             .words(words)
-            .padding(2) // Reduced padding from 5 to 2 for tighter spacing
-            .rotate(() => ~~(Math.random() * 2) * 90)
+            .padding(isWideCard ? 3 : 2) // Increased padding to prevent overlap
+            .rotate(() => {
+                // More varied rotation for better space usage
+                const rotations = [0, 90, -90, 45, -45];
+                return rotations[Math.floor(Math.random() * rotations.length)];
+            })
             .font("Impact, Arial, sans-serif")
             .fontSize(d => d.size)
+            .spiral(isWideCard ? "archimedean" : "rectangular") // Rectangular spiral for better regular card layout
             .on("end", draw);
         
         layout.start();
@@ -345,19 +622,31 @@ class ChartManager {
                 .selectAll("text")
                 .data(words)
                 .enter().append("text")
-                .style("font-size", d => `${d.size}px`)                    .style("font-family", "Impact, Arial, sans-serif")
+                .style("font-size", d => `${d.size}px`)
+                .style("font-family", "Impact, Arial, sans-serif")
+                .style("font-weight", "bold")
                 .style("fill", (d, i) => {
-                    const colors = ['#25d366', '#128c7e', '#34b7f1', '#ffc107', '#dc3545', '#8e44ad', '#e74c3c', '#f39c12', '#9b59b6', '#3498db'];
+                    // Enhanced color palette with better contrast and WhatsApp theme
+                    const colors = [
+                        '#25d366', '#128c7e', '#34b7f1', '#17a2b8', 
+                        '#28a745', '#007bff', '#6c757d', '#343a40',
+                        '#fd7e14', '#dc3545', '#6f42c1', '#e83e8c'
+                    ];
                     return colors[i % colors.length];
                 })
                 .attr("text-anchor", "middle")
                 .attr("transform", d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
                 .text(d => d.text)
-                .on("mouseover", function(d) {
-                    d3.select(this).style("opacity", 0.7);
+                .style("cursor", "pointer")
+                .on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .style("opacity", 0.7)
+                        .style("text-shadow", "2px 2px 4px rgba(0,0,0,0.3)");
                 })
-                .on("mouseout", function(d) {
-                    d3.select(this).style("opacity", 1);
+                .on("mouseout", function(event, d) {
+                    d3.select(this)
+                        .style("opacity", 1)
+                        .style("text-shadow", "none");
                 });
         }
         
@@ -438,7 +727,23 @@ class ChartManager {
         const ctx = canvas.getContext('2d');
         const labels = data.map(item => item.domain || item[0]);
         const counts = data.map(item => item.count || item[1] || 1);
-        const colors = data.map((_, i) => `hsl(${i * 40}, 65%, 55%)`);
+        
+        // WhatsApp-themed color palette
+        const whatsappColors = [
+            '#25d366', // WhatsApp green (primary)
+            '#128c7e', // Dark teal
+            '#34b7f1', // Light blue
+            '#17a2b8', // Info blue
+            '#28a745', // Success green
+            '#007bff', // Primary blue
+            '#6c757d', // Secondary gray
+            '#20c997', // Teal
+            '#fd7e14', // Orange
+            '#e83e8c', // Pink
+            '#6f42c1', // Purple
+            '#dc3545'  // Red
+        ];
+        const colors = data.map((_, i) => whatsappColors[i % whatsappColors.length]);
         
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
@@ -449,7 +754,9 @@ class ChartManager {
                     data: counts, 
                     backgroundColor: colors,
                     borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderColor: '#ffffff',
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#25d366' // WhatsApp green on hover
                 }] 
             },
             options: { 
@@ -457,10 +764,25 @@ class ChartManager {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'right',
                         labels: {
                             usePointStyle: true,
-                            padding: 10
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} (${percentage}%)`;
+                            }
                         }
                     }
                 }
@@ -477,6 +799,23 @@ class ChartManager {
         const labels = Object.keys(data);
         const values = Object.values(data);
         
+        // WhatsApp-themed color palette for bars
+        const whatsappColors = [
+            '#25d366', // WhatsApp green (primary)
+            '#128c7e', // Dark teal
+            '#34b7f1', // Light blue
+            '#17a2b8', // Info blue
+            '#28a745', // Success green
+            '#007bff', // Primary blue
+            '#6c757d', // Secondary gray
+            '#20c997', // Teal
+            '#fd7e14', // Orange
+            '#e83e8c', // Pink
+            '#6f42c1', // Purple
+            '#dc3545'  // Red
+        ];
+        const colors = labels.map((_, i) => whatsappColors[i % whatsappColors.length]);
+        
         if (this.charts[canvasId]) this.charts[canvasId].destroy();
         this.charts[canvasId] = new Chart(ctx, {
             type: 'bar',
@@ -485,16 +824,29 @@ class ChartManager {
                 datasets: [{ 
                     label: 'Avg Message Length', 
                     data: values, 
-                    backgroundColor: '#34b7f1',
-                    borderColor: '#34b7f1',
-                    borderWidth: 1
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color), // Same color for border
+                    borderWidth: 1,
+                    hoverBackgroundColor: colors.map(color => color + 'CC'), // Add transparency on hover
+                    hoverBorderColor: '#25d366',
+                    hoverBorderWidth: 2
                 }] 
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed.y} characters`;
+                            }
+                        }
+                    }
                 },
                 scales: {
                     y: { 
@@ -502,6 +854,14 @@ class ChartManager {
                         title: {
                             display: true,
                             text: 'Characters'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 }

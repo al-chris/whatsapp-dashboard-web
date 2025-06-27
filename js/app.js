@@ -337,7 +337,28 @@ class WhatsAppClientApp {
             counts[dateKey] = (counts[dateKey] || 0) + 1;
         });
         
-        return Object.keys(counts).sort().map(date => ({ label: date, value: counts[date] }));
+        // Create formatted labels based on granularity
+        return Object.keys(counts).sort().map(date => {
+            let formattedLabel;
+            if (granularity === 'daily') {
+                // Format: MM/DD (shorter format)
+                const d = new Date(date);
+                formattedLabel = `${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}`;
+            } else if (granularity === 'weekly') {
+                // Format: MM/DD (week start)
+                const d = new Date(date);
+                formattedLabel = `${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}`;
+            } else if (granularity === 'monthly') {
+                // Format: YYYY-MM
+                formattedLabel = date;
+            }
+            
+            return { 
+                label: formattedLabel, 
+                value: counts[date],
+                fullDate: date // Keep full date for tooltips
+            };
+        });
     }
 
     computeParticipantStats(messages) {
@@ -350,12 +371,51 @@ class WhatsAppClientApp {
 
     computeTypeStats(messages) {
         const types = { text: 0, media: 0, deleted: 0 };
+        
+        // System messages patterns to filter out (like Python implementation)
+        const systemMessages = [
+            'messages and calls are end-to-end encrypted',
+            'created group',
+            'added',
+            'removed',
+            'left',
+            'changed the group description',
+            'changed the subject',
+            'changed this group\'s icon'
+        ];
+        
         messages.forEach(msg => {
             const lower = msg.content.toLowerCase();
-            if (lower.includes('<media omitted>') || lower.includes('image omitted')) types.media++;
-            else if (lower.includes('this message was deleted')) types.deleted++;
-            else types.text++;
+            
+            // Skip system messages (like Python implementation)
+            const isSystemMessage = systemMessages.some(sysMsg => lower.includes(sysMsg));
+            if (isSystemMessage) {
+                return; // Skip this message
+            }
+            
+            // Enhanced media detection (matching Python logic)
+            if (lower.includes('<media omitted>') || 
+                lower.includes('image omitted') || 
+                lower.includes('video omitted') ||
+                lower.includes('audio omitted') ||
+                lower.includes('document omitted') ||
+                lower.includes('gif omitted') ||
+                lower.includes('sticker omitted') ||
+                lower.includes('contact card omitted')) {
+                types.media++;
+            }
+            // Enhanced deleted message detection
+            else if (lower.includes('this message was deleted') || 
+                     lower.includes('you deleted this message') ||
+                     lower.includes('message deleted')) {
+                types.deleted++;
+            }
+            // Everything else is text
+            else {
+                types.text++;
+            }
         });
+        
         return Object.entries(types).map(([type, count]) => ({ type, count }));
     }
 
@@ -413,6 +473,7 @@ class WhatsAppClientApp {
     computeResponseStats(messages) {
         const responseTimes = {};
         const responseCounts = {};
+        const allResponseTimes = {}; // Store all individual response times for median calculation
         
         for (let i = 1; i < messages.length; i++) {
             const current = messages[i];
@@ -425,17 +486,27 @@ class WhatsAppClientApp {
                     if (!responseTimes[current.participant]) {
                         responseTimes[current.participant] = 0;
                         responseCounts[current.participant] = 0;
+                        allResponseTimes[current.participant] = [];
                     }
                     responseTimes[current.participant] += timeDiff;
                     responseCounts[current.participant]++;
+                    allResponseTimes[current.participant].push(timeDiff);
                 }
             }
         }
         
-        return Object.entries(responseTimes).map(([participant, totalTime]) => ({
-            participant,
-            average: Math.round(totalTime / responseCounts[participant] / 60) // minutes
-        }));
+        return Object.entries(responseTimes).map(([participant, totalTime]) => {
+            const times = allResponseTimes[participant].sort((a, b) => a - b);
+            const median = times.length % 2 === 0
+                ? (times[times.length / 2 - 1] + times[times.length / 2]) / 2
+                : times[Math.floor(times.length / 2)];
+                
+            return {
+                participant,
+                average: Math.round(totalTime / responseCounts[participant] / 60), // minutes
+                median: Math.round(median / 60) // minutes
+            };
+        });
     }
 
     computeStarterStats(messages) {

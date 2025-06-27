@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Cloud Space Usage Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="js/d3.layout.cloud.fixed.js"></script>
+    <style>
+        .test-container {
+            margin: 20px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-regular {
+            width: 400px;
+            height: 400px;
+        }
+        .test-wide {
+            width: 800px;
+            height: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Word Cloud Space Usage Test</h1>
+        
+        <div class="test-container">
+            <h2>Regular Card Size (400px × 400px)</h2>
+            <div class="chart-card test-regular">
+                <div id="wordCloudRegular" style="width: 100%; height: calc(100% - 40px);"></div>
+            </div>
+        </div>
+        
+        <div class="test-container">
+            <h2>Wide Card Size (800px × 400px)</h2>
+            <div class="chart-card wide test-wide">
+                <div id="wordCloudWide" style="width: 100%; height: calc(100% - 40px);"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/charts.js"></script>
+    <script>
+        // Sample word cloud data
+        const testData = [
+            { word: "WhatsApp", count: 150 },
+            { word: "Message", count: 120 },
+            { word: "Chat", count: 100 },
+            { word: "Group", count: 95 },
+            { word: "Photo", count: 80 },
+            { word: "Video", count: 75 },
+            { word: "Call", count: 65 },
+            { word: "Status", count: 55 },
+            { word: "Contact", count: 50 },
+            { word: "Settings", count: 45 },
+            { word: "Media", count: 40 },
+            { word: "Voice", count: 35 },
+            { word: "Document", count: 30 },
+            { word: "Location", count: 28 },
+            { word: "Emoji", count: 25 },
+            { word: "Sticker", count: 22 },
+            { word: "Notification", count: 20 },
+            { word: "Privacy", count: 18 },
+            { word: "Backup", count: 15 },
+            { word: "Archive", count: 12 },
+            { word: "Block", count: 10 },
+            { word: "Mute", count: 8 },
+            { word: "Forward", count: 7 },
+            { word: "Reply", count: 6 },
+            { word: "Delete", count: 5 },
+            { word: "Edit", count: 4 },
+            { word: "Share", count: 3 },
+            { word: "Save", count: 2 },
+            { word: "Copy", count: 1 }
+        ];
+
+        // Initialize chart manager
+        const chartManager = new ChartManager();
+        
+        // Create word clouds for both sizes
+        chartManager.createWordCloudChart('wordCloudRegular', testData);
+        chartManager.createWordCloudChart('wordCloudWide', testData);
+    </script>
+</body>
+</html>

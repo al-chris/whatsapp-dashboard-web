@@ -292,27 +292,31 @@ input[type="file"]:hover {
 /* Additional styling for wide chart cards */
 .chart-card.wide {
     grid-column: span 2;
-    height: 500px;
+    height: 400px; /* Same height as regular cards */
 }
 
 /* D3 Word Cloud styling */
 .chart-card #wordCloudChart {
     width: 100%;
-    height: calc(100% - 60px);
-    max-height: 420px; /* Increased for wide cards */
+    height: calc(100% - 50px); /* More space for word cloud */
+    min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; /* Ensure proper positioning context */
+    overflow: hidden; /* Prevent content from extending outside */
 }
 
 .chart-card.wide #wordCloudChart {
-    grid-column: span 2;
-    max-height: 440px; /* Even more space for wide cards */
+    height: calc(100% - 50px); /* Consistent with regular cards now */
+    overflow: hidden; /* Critical for wide cards to prevent tab overlap */
 }
 
 .chart-card #wordCloudChart svg {
     width: 100%;
     height: 100%;
+    overflow: hidden; /* Prevent words from extending outside container */
+    max-width: none; /* Ensure full width usage */
 }
 
 .chart-card #wordCloudChart text {
@@ -407,7 +411,7 @@ input[type="file"]:hover {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    height: 40px;
+    height: 32px;
     width: 90px;
     font-size: 0.9rem;
     color: #666;
@@ -422,8 +426,8 @@ input[type="file"]:hover {
 
 .heatmap-hour-labels {
     display: flex;
-    height: 25px;
-    margin-bottom: 8px;
+    height: 20px;
+    margin-bottom: 5px;
 }
 
 .heatmap-hour {
@@ -438,19 +442,19 @@ input[type="file"]:hover {
 
 .heatmap-row {
     display: flex;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .heatmap-cell {
     flex: 1;
     min-width: 0;
-    height: 37px;
+    height: 29px;
     margin-right: 2px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
     color: white;
     transition: all 0.2s ease;
