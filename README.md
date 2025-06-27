@@ -163,7 +163,7 @@ This is part of a larger WhatsApp Dashboard project. Contributions are welcome!
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## 🐛 Troubleshooting
 
