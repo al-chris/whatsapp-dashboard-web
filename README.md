@@ -1,4 +1,6 @@
-# WhatsApp Chat Analysis Dashboard (v2) 📱📊
+# WhatsApp Chat Analysis Dashboard
+
+![logo](logo.png)
 
 A **client-side only** web application for analyzing and visualizing WhatsApp chat exports. This version runs entirely in your browser without requiring any server or backend - your data never leaves your device!
 
