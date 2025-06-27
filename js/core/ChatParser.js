@@ -7,7 +7,8 @@ window.ChatParser = {
         const timestamps = [];
         // Regex: date, time - rest
         const dateRegex = /^(\d{1,2}\/\d{1,2}\/\d{2,4}),?\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[APMapm]{2})?)\s*-\s*(.+)$/;
-        const systemKeywords = ['encrypted','created group','added','removed','left','changed the group','image omitted','<media omitted>','deleted'];
+        // Only filter out true system messages (not user-generated content like media or deleted messages)
+        const systemKeywords = ['encrypted','created group','added','removed','left','changed the group'];
         lines.forEach(line => {
             const m = dateRegex.exec(line);
             if (!m) return;
@@ -19,7 +20,7 @@ window.ChatParser = {
             if (idx === -1) return;
             const participant = contentPart.slice(0, idx).trim();
             const body = contentPart.slice(idx + 1).trim();
-            // Skip system messages
+            // Skip only true system messages (not media or deleted messages)
             if (systemKeywords.some(k => body.toLowerCase().includes(k))) return;
             // Parse timestamp
             const parts = dateStr.split('/').map(p => parseInt(p,10));

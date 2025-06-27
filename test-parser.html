@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Chat Parser Test</title>
+</head>
+<body>
+    <h1>WhatsApp Chat Parser Test</h1>
+    <div id="output"></div>
+    
+    <script src="js/core/ChatParser.js"></script>
+    <script>
+        // Test data
+        const testChat = `12/15/21, 10:30 AM - John: Hello everyone!
+12/15/21, 10:31 AM - Alice: Hi John! How are you?
+12/15/21, 10:32 AM - John: <Media omitted>
+12/15/21, 10:33 AM - Bob: This message was deleted
+12/15/21, 10:34 AM - Alice: That's a great picture!
+12/15/21, 10:35 AM - System: Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.
+12/15/21, 10:36 AM - John: image omitted
+12/15/21, 10:37 AM - Alice: Thanks for sharing 😊
+12/15/21, 10:38 AM - Bob: You deleted this message
+12/15/21, 10:39 AM - John: video omitted
+12/15/21, 10:40 AM - Alice: document omitted
+12/15/21, 10:41 AM - Bob: John added Alice
+12/15/21, 10:42 AM - John: sticker omitted
+12/15/21, 10:43 AM - Alice: This is a regular text message
+12/15/21, 10:44 AM - Bob: Another text message here
+12/15/21, 10:45 AM - John: contact card omitted
+12/15/21, 10:46 AM - Alice: message deleted
+12/15/21, 10:47 AM - Bob: gif omitted`;
+
+        // Parse the chat
+        const parsed = ChatParser.parse(testChat);
+        
+        // Compute type stats like the app does
+        function computeTypeStats(messages) {
+            const types = { text: 0, media: 0, deleted: 0 };
+            
+            // System messages patterns to filter out (like Python implementation)
+            const systemMessages = [
+                'messages and calls are end-to-end encrypted',
+                'created group',
+                'added',
+                'removed',
+                'left',
+                'changed the group description',
+                'changed the subject',
+                'changed this group\'s icon'
+            ];
+            
+            messages.forEach(msg => {
+                const lower = msg.content.toLowerCase();
+                
+                // Skip system messages (like Python implementation)
+                const isSystemMessage = systemMessages.some(sysMsg => lower.includes(sysMsg));
+                if (isSystemMessage) {
+                    return; // Skip this message
+                }
+                
+                // Enhanced media detection (matching Python logic)
+                if (lower.includes('<media omitted>') || 
+                    lower.includes('image omitted') || 
+                    lower.includes('video omitted') ||
+                    lower.includes('audio omitted') ||
+                    lower.includes('document omitted') ||
+                    lower.includes('gif omitted') ||
+                    lower.includes('sticker omitted') ||
+                    lower.includes('contact card omitted')) {
+                    types.media++;
+                }
+                // Enhanced deleted message detection
+                else if (lower.includes('this message was deleted') || 
+                         lower.includes('you deleted this message') ||
+                         lower.includes('message deleted')) {
+                    types.deleted++;
+                }
+                // Everything else is text
+                else {
+                    types.text++;
+                }
+            });
+            
+            return Object.entries(types).map(([type, count]) => ({ type, count }));
+        }
+        
+        const typeStats = computeTypeStats(parsed.messages);
+        
+        // Display results
+        const output = document.getElementById('output');
+        output.innerHTML = `
+            <h2>Parse Results:</h2>
+            <p><strong>Total Messages Parsed:</strong> ${parsed.messages.length}</p>
+            <p><strong>Participants:</strong> ${parsed.participants.join(', ')}</p>
+            
+            <h3>Message Types:</h3>
+            <ul>
+                ${typeStats.map(stat => `<li>${stat.type}: ${stat.count}</li>`).join('')}
+            </ul>
+            
+            <h3>All Messages:</h3>
+            <ul>
+                ${parsed.messages.map(msg => `<li><strong>${msg.participant}:</strong> ${msg.content}</li>`).join('')}
+            </ul>
+        `;
+        
+        console.log('Parsed data:', parsed);
+        console.log('Type stats:', typeStats);
+    </script>
+</body>
+</html>
