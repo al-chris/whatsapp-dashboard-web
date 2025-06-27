@@ -1,0 +1,677 @@
+/* Upload Components */
+.upload-area {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.upload-area h2 {
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 2rem;
+}
+
+.upload-area p {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 2rem;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    text-align: center;
+}
+
+input[type="file"]:hover {
+    border-color: #25d366;
+    background: #f0fdf4;
+}
+
+/* Upload Components - Enhanced to match original */
+.file-upload {
+    margin: 2rem 0;
+}
+
+.upload-zone {
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    background: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+    border-color: #25d366;
+    background: #f0fdf4;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.file-types {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+/* Progress Bar */
+.upload-progress {
+    margin: 2rem 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #25d366, #128c7e);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#progressText {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #666;
+}
+
+/* Upload Result */
+.result-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid #25d366;
+}
+
+.result-card h3 {
+    color: #25d366;
+    margin-bottom: 1rem;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #25d366;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Guide Section */
+.guide-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    margin-top: 2rem;
+}
+
+.guide-section h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.steps {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.step-number {
+    background: #25d366;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.step-content p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* Dashboard Components */
+.dashboard-content {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card h3 {
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #25d366;
+    margin-top: 0.5rem;
+    line-height: 1;
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+}
+
+.chart-card h3 {
+    margin-bottom: 1rem;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Ensure canvases fill their chart-card containers properly */
+.chart-card canvas {
+    width: 100% !important;
+    height: calc(100% - 60px) !important; /* Account for title space */
+    max-height: 320px !important;
+}
+
+/* Additional styling for wide chart cards */
+.chart-card.wide {
+    grid-column: span 2;
+    height: 500px;
+}
+
+/* D3 Word Cloud styling */
+.chart-card #wordCloudChart {
+    width: 100%;
+    height: calc(100% - 60px);
+    max-height: 420px; /* Increased for wide cards */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-card.wide #wordCloudChart {
+    grid-column: span 2;
+    max-height: 440px; /* Even more space for wide cards */
+}
+
+.chart-card #wordCloudChart svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chart-card #wordCloudChart text {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.chart-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.chart-controls select,
+.chart-controls button {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.8rem;
+}
+
+.chart-controls button {
+    background: #25d366;
+    color: white;
+    border-color: #25d366;
+    cursor: pointer;
+}
+
+.chart-controls button:hover {
+    background: #128c7e;
+}
+
+/* Content tabs styling */
+.content-tabs {
+    display: flex;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 1rem;
+}
+
+.content-tab {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.content-tab.active {
+    color: #25d366;
+    border-bottom-color: #25d366;
+}
+
+.content-tab:hover {
+    color: #25d366;
+}
+
+.tab-content {
+    display: none;
+    height: calc(100% - 100px);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Activity heatmap styling */
+#activityHeatmap {
+    padding: 1rem 0;
+    overflow-x: auto;
+}
+
+.heatmap-container {
+    display: flex;
+    align-items: stretch;
+    min-width: 800px;
+}
+
+.heatmap-days {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+.heatmap-day {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 30px;
+    width: 80px;
+    font-size: 0.8rem;
+    color: #666;
+    padding-right: 10px;
+}
+
+.heatmap-hours {
+    display: flex;
+    flex-direction: column;
+}
+
+.heatmap-hour-labels {
+    display: flex;
+    height: 20px;
+    margin-bottom: 5px;
+}
+
+.heatmap-hour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    font-size: 0.7rem;
+    color: #666;
+}
+
+.heatmap-row {
+    display: flex;
+    margin-bottom: 2px;
+}
+
+.heatmap-cell {
+    width: 30px;
+    height: 28px;
+    margin-right: 1px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    position: relative;
+}
+
+/* Heatmap intensity colors */
+.heatmap-cell.intensity-0 { background-color: #eee; color: #666; }
+.heatmap-cell.intensity-1 { background-color: #dcf8c6; color: #333; }
+.heatmap-cell.intensity-2 { background-color: #b8e6b8; }
+.heatmap-cell.intensity-3 { background-color: #94d494; }
+.heatmap-cell.intensity-4 { background-color: #70c270; }
+.heatmap-cell.intensity-5 { background-color: #4cb04c; }
+.heatmap-cell.intensity-6 { background-color: #289e28; }
+.heatmap-cell.intensity-7 { background-color: #128c12; }
+.heatmap-cell.intensity-8 { background-color: #0a7a0a; }
+.heatmap-cell.intensity-9 { background-color: #056805; }
+.heatmap-cell.intensity-10 { background-color: #025602; }
+
+/* User Statistics Grid enhancements */
+.user-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.user-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #25d366;
+    margin: 0.5rem 0;
+}
+
+.user-stat-subtext {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Longest Pauses Styling */
+.pause-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+.pause-duration {
+    font-size: 18px;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.pause-details {
+    color: #6c757d;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.pause-restarter {
+    font-weight: bold;
+    color: #25d366;
+}
+
+/* Ensure longest pauses container doesn't overflow */
+#longestPauses {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+/* User Word Clouds Styling */
+.word-cloud-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.word-item {
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #495057;
+    border: 1px solid #ced4da;
+    white-space: nowrap;
+    display: inline-block;
+    margin: 2px;
+    transition: all 0.2s ease;
+}
+
+.word-item:hover {
+    background: #dee2e6;
+    transform: scale(1.05);
+}
+
+/* User stat card styling for word clouds */
+.user-stat-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    margin: 10px 0;
+    min-height: 120px;
+}
+
+.user-stat-card h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+    
+    .chart-card.wide {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .chart-card {
+        height: 350px;
+    }
+    
+    .chart-card.wide {
+        height: 400px;
+    }
+    
+    .overview-cards {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .upload-area {
+        margin-bottom: 2rem;
+    }
+    
+    .upload-area h2 {
+        font-size: 1.5rem;
+    }
+    
+    input[type="file"] {
+        padding: 1.5rem;
+    }
+    
+    .content-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .content-tab {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    /* Responsive adjustments for pause items */
+    .pause-details {
+        font-size: 12px;
+    }
+    
+    .pause-duration {
+        font-size: 16px;
+    }
+    
+    .pause-item {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    #longestPauses {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .overview-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-card {
+        height: 300px;
+        padding: 1rem;
+    }
+    
+    .metric {
+        font-size: 2rem;
+    }
+    
+    .pause-details {
+        font-size: 11px;
+    }
+    
+    .pause-duration {
+        font-size: 14px;
+    }
+    
+    .pause-item {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+}

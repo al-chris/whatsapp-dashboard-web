@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Chat Analysis Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-wordcloud@4.4.4"></script>
+    <!-- D3.js for word cloud visualization -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <!-- Fixed d3-cloud library (prevents Canvas2D warnings) -->
+    <script src="js/d3.layout.cloud.fixed.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="logo">WhatsApp Chat Analyzer</h1>
+                <nav class="nav">
+                    <button id="homeBtn" class="nav-btn active">Upload</button>
+                    <button id="dashboardBtn" class="nav-btn">Dashboard</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Upload Section -->
+            <section id="uploadSection" class="section active">
+                <div class="container">
+                    <div class="upload-area">
+                        <h2>Upload Your WhatsApp Chat</h2>
+                        <p>Export your WhatsApp chat and upload it here for analysis</p>
+                        
+                        <div class="file-upload" id="fileUpload">
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-icon">📁</div>
+                                <p>Drag & drop your chat file here or click to browse</p>
+                                <p class="file-types">Supports .txt and .zip files</p>
+                                <input type="file" id="fileInput" accept=".txt,.zip" hidden>
+                            </div>
+                        </div>
+
+                        <div class="upload-progress" id="uploadProgress" style="display: none;">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p id="progressText">Uploading...</p>
+                        </div>
+
+                        <div class="upload-result" id="uploadResult" style="display: none;">
+                            <div class="result-card">
+                                <h3>Upload Successful!</h3>
+                                <div class="stats" id="uploadStats"></div>
+                                <button id="viewDashboardBtn" class="btn-primary">View Analysis</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How to Export Guide -->
+                    <div class="guide-section">
+                        <h3>How to Export WhatsApp Chat</h3>
+                        <div class="steps">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <div class="step-content">
+                                    <strong>Open WhatsApp</strong>
+                                    <p>Go to the chat you want to analyze</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <div class="step-content">
+                                    <strong>Export Chat</strong>
+                                    <p>Tap on chat name → Export Chat → Without Media</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <div class="step-content">
+                                    <strong>Upload Here</strong>
+                                    <p>Save the exported file and upload it above</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="section">
+                <div class="container">
+                    <h2>Chat Analysis Dashboard</h2>
+                    
+                    <div class="dashboard-content" id="dashboardContent">
+                        <!-- Overview Cards -->
+                        <div class="overview-cards">
+                            <div class="card">
+                                <h3>Total Messages</h3>
+                                <div class="metric" id="totalMessages">0</div>
+                            </div>
+                            <div class="card">
+                                <h3>Participants</h3>
+                                <div class="metric" id="totalParticipants">0</div>
+                            </div>
+                            <div class="card">
+                                <h3>Date Range</h3>
+                                <div class="metric" id="dateRange">-</div>
+                            </div>
+                            <div class="card">
+                                <h3>Avg Messages/Day</h3>
+                                <div class="metric" id="avgMessagesPerDay">0</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Grid -->
+                        <div class="charts-grid">
+                            <!-- Activity Over Time Section -->
+                            <div class="chart-card wide">
+                                <h3>📊 Messages Over Time</h3>
+                                <div class="chart-controls">
+                                    <select id="timelineControls">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <canvas id="messagesTimeChart"></canvas>
+                            </div>
+                            
+                            <!-- Hourly Activity Heatmap -->
+                            <div class="chart-card wide">
+                                <h3>🕒 Activity Heatmap</h3>
+                                <div id="activityHeatmap"></div>
+                            </div>
+                            
+                            <!-- Messages by Participant -->
+                            <div class="chart-card">
+                                <h3>👥 Messages by Participant</h3>
+                                <canvas id="participantChart"></canvas>
+                            </div>
+                            
+                            <!-- Message Types -->
+                            <div class="chart-card">
+                                <h3>💬 Message Types</h3>
+                                <canvas id="messageTypesChart"></canvas>
+                            </div>
+                            
+                            <!-- User Statistics Section -->
+                            <div class="chart-card wide">
+                                <h3>📈 User Statistics</h3>
+                                <div class="content-tabs">
+                                    <button class="content-tab active" data-tab="messageLength">Message Length</button>
+                                    <button class="content-tab" data-tab="emojiUsage">Emoji Usage</button>
+                                    <button class="content-tab" data-tab="userWordClouds">Word Clouds</button>
+                                </div>
+                                <div class="tab-content active" id="messageLength">
+                                    <canvas id="userMessageLengthChart"></canvas>
+                                </div>
+                                <div class="tab-content" id="emojiUsage">
+                                    <canvas id="userEmojiUsageChart"></canvas>
+                                </div>
+                                <div class="tab-content" id="userWordClouds">
+                                    <div class="user-stats-grid" id="userWordCloudGrid">
+                                        <!-- Dynamic user word clouds -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Analysis Section -->
+                            <div class="chart-card wide">
+                                <h3>🔍 Content Analysis</h3>
+                                <div class="content-tabs">
+                                    <button class="content-tab active" data-tab="wordCloud">Word Cloud</button>
+                                    <button class="content-tab" data-tab="emojiAnalysis">Emoji Analysis</button>
+                                    <button class="content-tab" data-tab="sharedLinks">Shared Links</button>
+                                </div>
+                                <div class="tab-content active" id="wordCloud">
+                                    <div id="wordCloudChart"></div>
+                                </div>
+                                <div class="tab-content" id="emojiAnalysis">
+                                    <canvas id="emojiChart"></canvas>
+                                </div>
+                                <div class="tab-content" id="sharedLinks">
+                                    <canvas id="sharedDomainsChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Interaction Metrics Section -->
+                            <div class="chart-card">
+                                <h3>⚡ Response Times</h3>
+                                <canvas id="responseTimeChart"></canvas>
+                            </div>
+                            
+                            <div class="chart-card">
+                                <h3>🗣️ Conversation Starters</h3>
+                                <canvas id="conversationStartersChart"></canvas>
+                            </div>
+                            
+                            <!-- Longest Pauses -->
+                            <div class="chart-card wide">
+                                <h3>⏸️ Longest Conversation Pauses</h3>
+                                <div id="longestPauses">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Scripts -->
+    <script src="js/core/ChatParser.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
