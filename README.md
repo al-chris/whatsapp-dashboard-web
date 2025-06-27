@@ -48,8 +48,6 @@ For best performance, serve the files through a local web server:
 
 **Using Python:**
 ```bash
-# Navigate to the v2 directory
-cd v2
 
 # Python 3
 python -m http.server 8080
@@ -62,8 +60,7 @@ python -m http.server 8080
 # Install a simple server globally
 npm install -g http-server
 
-# Navigate to v2 directory and start server
-cd v2
+# Start server
 http-server -p 8080
 
 # Open http://localhost:8080 in your browser
