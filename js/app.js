@@ -370,9 +370,9 @@ class WhatsAppClientApp {
     }
 
     computeTypeStats(messages) {
-        const types = { text: 0, media: 0, deleted: 0 };
+        const types = { text: 0, media: 0, deleted: 0, system: 0 };
         
-        // System messages patterns to filter out (like Python implementation)
+        // System messages patterns (matching Python implementation)
         const systemMessages = [
             'messages and calls are end-to-end encrypted',
             'created group',
@@ -380,22 +380,25 @@ class WhatsAppClientApp {
             'removed',
             'left',
             'changed the group description',
-            'changed the subject',
             'changed this group\'s icon'
         ];
         
         messages.forEach(msg => {
-            const lower = msg.content.toLowerCase();
+            const content = msg.content;
+            const lower = content.toLowerCase();
             
-            // Skip system messages (like Python implementation)
+            // Check for system messages first (like Python implementation)
             const isSystemMessage = systemMessages.some(sysMsg => lower.includes(sysMsg));
             if (isSystemMessage) {
-                return; // Skip this message
+                types.system++;
+                return; // Skip further processing for system messages
             }
             
-            // Enhanced media detection (matching Python logic)
-            if (lower.includes('<media omitted>') || 
-                lower.includes('image omitted') || 
+            // Enhanced media detection (more comprehensive than Python)
+            // Python only checks: "<Media omitted>" and "image omitted"
+            // We check for all media types for better accuracy
+            if (content.includes('<Media omitted>') || 
+                lower.includes('image omitted') ||
                 lower.includes('video omitted') ||
                 lower.includes('audio omitted') ||
                 lower.includes('document omitted') ||
@@ -404,8 +407,9 @@ class WhatsAppClientApp {
                 lower.includes('contact card omitted')) {
                 types.media++;
             }
-            // Enhanced deleted message detection
-            else if (lower.includes('this message was deleted') || 
+            // Deleted message detection (Python only checks "This message was deleted")
+            // We check multiple patterns for better accuracy
+            else if (content.includes('This message was deleted') || 
                      lower.includes('you deleted this message') ||
                      lower.includes('message deleted')) {
                 types.deleted++;
@@ -416,7 +420,13 @@ class WhatsAppClientApp {
             }
         });
         
-        return Object.entries(types).map(([type, count]) => ({ type, count }));
+        // Filter out system messages from the result (like Python backend does during parsing)
+        // Return only user-generated content types
+        return [
+            { type: 'text', count: types.text },
+            { type: 'media', count: types.media },
+            { type: 'deleted', count: types.deleted }
+        ];
     }
 
     computeLengthStats(messages) {
