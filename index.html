@@ -54,6 +54,14 @@
     <meta name="msapplication-TileColor" content="#25d366">
     <meta name="msapplication-config" content="assets/favicon/browserconfig.xml">
     
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-title" content="WhatsApp Analyzer">
+    <meta name="application-name" content="WhatsApp Analyzer">
+    <meta name="msapplication-tooltip" content="Analyze your WhatsApp conversations">
+    <meta name="msapplication-starturl" content="/whatsapp-dashboard-web/">
+    <link rel="apple-touch-startup-image" href="assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/whatsapp-dashboard-web/manifest.json">
+    
     <!-- Canonical URL -->
     <link rel="canonical" href="https://al-chris.me/whatsapp-dashboard-web/">
     
@@ -322,5 +330,20 @@
     <script src="js/core/ChatParser.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/whatsapp-dashboard-web/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
