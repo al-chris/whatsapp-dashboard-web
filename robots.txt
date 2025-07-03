@@ -5,7 +5,8 @@ Allow: /whatsapp-dashboard-web/styles/
 Allow: /whatsapp-dashboard-web/js/
 Allow: /whatsapp-dashboard-web/assets/
 Disallow: /whatsapp-dashboard-web/test-*
-Disallow: *.txt
+Disallow: /*.txt
+Allow: /robots.txt
 Disallow: *.zip
 
 # Sitemap location
