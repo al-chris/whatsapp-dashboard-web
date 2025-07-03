@@ -69,6 +69,8 @@ self.addEventListener('fetch', (event) => {
           if (event.request.destination === 'document') {
             return caches.match('/whatsapp-dashboard-web/index.html');
           }
+          // Return a fallback response for non-navigation requests
+          return new Response('', { status: 503, statusText: 'Service Unavailable' });
         });
       })
   );
