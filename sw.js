@@ -94,8 +94,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('sync', (event) => {
   if (event.tag === 'background-sync') {
     event.waitUntil(
-      // Handle background sync logic here
-      console.log('Background sync triggered')
+      Promise.resolve().then(() => {
+        console.log('Background sync triggered');
+      })
     );
   }
 });
