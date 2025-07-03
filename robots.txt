@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /whatsapp-dashboard-web/index.html
+Allow: /whatsapp-dashboard-web/styles/
+Allow: /whatsapp-dashboard-web/js/
+Allow: /whatsapp-dashboard-web/assets/
+Disallow: /whatsapp-dashboard-web/test-*
+Disallow: /*.txt
+Allow: /robots.txt
+Disallow: *.zip
+
+# Sitemap location
+Sitemap: https://al-chris.me/whatsapp-dashboard-web/sitemap.xml
+
+# Crawl delay (optional, helps prevent overwhelming the server)
+Crawl-delay: 1
