@@ -4,7 +4,7 @@ window.ChatParser = {
         const lines = text.split(/\r?\n/);
         const messages = [];
         const participants = new Set();
-        const timestamps = [];
+        let minTimestamp = null, maxTimestamp = null;
         // Regex: date, time - rest
         const dateRegex = /^(\d{1,2}\/\d{1,2}\/\d{2,4}),?\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[APMapm]{2})?)\s*-\s*(.+)$/;
         // Only filter out true system messages (not user-generated content like media or deleted messages)
@@ -42,13 +42,10 @@ window.ChatParser = {
             const timestamp = new Date(year, month, day, hours, minutes, seconds);
             messages.push({ participant, content: body, timestamp });
             participants.add(participant);
-            timestamps.push(timestamp);
+            // Track min and max timestamps
+            if (minTimestamp === null || timestamp < minTimestamp) minTimestamp = timestamp;
+            if (maxTimestamp === null || timestamp > maxTimestamp) maxTimestamp = timestamp;
         });
-        let start = null, end = null;
-        if (timestamps.length) {
-            start = new Date(Math.min(...timestamps));
-            end = new Date(Math.max(...timestamps));
-        }
-        return { messages, participants: Array.from(participants), dateRangeStart: start, dateRangeEnd: end };
+        return { messages, participants: Array.from(participants), dateRangeStart: minTimestamp, dateRangeEnd: maxTimestamp };
     }
 };
